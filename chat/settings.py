@@ -57,21 +57,20 @@ TEMPLATES = (
 # https://docs.djangoproject.com/en/1.9/ref/settings/#databases
 
 #DATABASES = {
-#    'default': dj_database_url.config(default="postgres:///channels-example", conn_max_age=500)
+#    'default': dj_database_url.config(default="postgres://tcgzkngyfhbhxq:8c98c5d1bc6ce4f939090a35dc28845138e70bd6bd2c0939ac1d75b251c5ef22@ec2-23-21-227-73.compute-1.amazonaws.com:5432/db022egfc", 
+#       conn_max_age=500)
 #}
 
-DATABASES = {
-    'default': dj_database_url.config(
-        default='sqlite:///' + os.path.join(BASE_DIR, 'db.sqlite3'), conn_max_age=500
-    )
-}
-'''
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
-} '''
+}
+
+db_from_env = dj_database_url.config(conn_max_age=500)  # for heroku
+DATABASES['default'].update(db_from_env) 
+
 
 AUTH_PASSWORD_VALIDATORS = (
     {
