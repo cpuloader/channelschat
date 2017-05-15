@@ -115,11 +115,11 @@ STATICFILES_DIRS = [
 # Channel settings
 CHANNEL_LAYERS = {
     "default": {
-        "BACKEND": "asgiref.inmemory.ChannelLayer", 
-        #"BACKEND": "asgi_redis.RedisChannelLayer",
-        #"CONFIG": {
-        #    "hosts": [os.environ.get('REDIS_URL', 'redis://localhost:6379')],
-        #},
+        #"BACKEND": "asgiref.inmemory.ChannelLayer", 
+        "BACKEND": "asgi_redis.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [os.environ.get('REDIS_URL', 'redis://localhost:6379')],
+        },
         "ROUTING": "chat.routing.channel_routing",
     },
 }
