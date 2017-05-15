@@ -2,6 +2,7 @@ import os
 import random
 import string
 import dj_database_url
+import asgi_redis
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))

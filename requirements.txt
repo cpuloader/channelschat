@@ -6,3 +6,4 @@ dj_database_url==0.4.2
 pytest==3.0.7
 whitenoise
 psycopg2
+asgi_redis
