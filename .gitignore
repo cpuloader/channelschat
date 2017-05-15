@@ -1,4 +1,5 @@
 **/migrations
+staticfiles/
 db.sqlite3
 run_env.bat
 *.pyc
