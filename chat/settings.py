@@ -57,7 +57,7 @@ TEMPLATES = (
 # https://docs.djangoproject.com/en/1.9/ref/settings/#databases
 
 DATABASES = {
-    'default': dj_database_url.config(default="postgres:///powerful-taiga-37391", conn_max_age=500)
+    'default': dj_database_url.config(default="postgres:///postgresql-rigid-58677", conn_max_age=500)
 }
 
 #DATABASES = {
