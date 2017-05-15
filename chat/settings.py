@@ -56,9 +56,9 @@ TEMPLATES = (
 # Database
 # https://docs.djangoproject.com/en/1.9/ref/settings/#databases
 
-#DATABASES = {
-#    'default': dj_database_url.config(default="postgres://vavavava", conn_max_age=500)
-#}
+DATABASES = {
+    'default': dj_database_url.config(default="postgres:///powerful-taiga-37391", conn_max_age=500)
+}
 
 #DATABASES = {
 #    'default': {
@@ -69,7 +69,6 @@ TEMPLATES = (
 
 #db_from_env = dj_database_url.config(conn_max_age=500)  # for heroku
 #DATABASES['default'].update(db_from_env) 
-DATABASES['default'] =  dj_database_url.config(conn_max_age=500)
 
 AUTH_PASSWORD_VALIDATORS = (
     {
