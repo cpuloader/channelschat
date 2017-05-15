@@ -1,0 +1,5 @@
+**/migrations
+db.sqlite3
+run_env.bat
+*.pyc
+__pycache__
