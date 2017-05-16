@@ -13,7 +13,7 @@ def ws_connect(message):
     # form /chat/{label}/, and finds a Room if the message path is applicable,
     # and if the Room exists. Otherwise, bails (meaning this is a some othersort
     # of websocket). So, this is effectively a version of _get_object_or_404.
-    message.reply_channel.send({"accept": True})
+    
     try:
         prefix, label = message['path'].decode('ascii').strip('/').split('/')
         print('room connect:', label)
@@ -31,8 +31,9 @@ def ws_connect(message):
     log.debug('chat connect room=%s client=%s:%s', 
         room.label, message['client'][0], message['client'][1])
 
+    message.reply_channel.send({"accept": True})
     message.channel_session['room'] = room.label
-    #print('room connect:', label)
+    print('room connect:', label)
     # Need to be explicit about the channel layer so that testability works
     # This may be a FIXME?
     Group('chat-' + label, channel_layer=message.channel_layer).add(message.reply_channel)

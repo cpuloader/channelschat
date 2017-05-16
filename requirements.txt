@@ -7,3 +7,5 @@ pytest==3.0.7
 whitenoise
 psycopg2
 asgi_redis
+djangorestframework
+drf-nested-routers

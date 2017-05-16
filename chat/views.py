@@ -2,9 +2,14 @@ import random
 import string
 from django.db import transaction
 from django.shortcuts import render, redirect
+from rest_framework import permissions, viewsets, status
+from rest_framework.response import Response
+from rest_framework import serializers
+
 from haikunator import Haikunator
 
-from .models import Room
+from .models import Room, Message
+from .serializers import RoomSerializer, MessageSerializer
 
 haikunator = Haikunator()
 
@@ -42,3 +47,13 @@ def chat_room(request, label):
         'room': room,
         'messages': messages,
     })
+
+
+class MessagesViewSet(viewsets.ModelViewSet):
+    queryset = Message.objects.order_by('-timestamp')
+    serializer_class = MessageSerializer
+
+    def get_permissions(self):
+        if self.request.method in permissions.SAFE_METHODS:
+            return (permissions.AllowAny(),) #IsAuthenticated(),) 
+        return (permissions.AllowAny(),)    #IsAuthenticated(),
