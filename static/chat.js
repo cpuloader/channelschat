@@ -32,7 +32,9 @@ $(function() {
         return false;
     });
 
-    var apiUrl = 'http://127.0.0.1:8000/api/v1/messages/';
+    //var apiUrl = 'http://127.0.0.1:8000/api/v1/messages/';
+    var apiUrl = window.location.protocol + '//' + window.location.host + '/api/v1/messages/';
+    console.log(apiUrl);
     $.ajax({
         url: apiUrl, 
         dataType: 'json',
@@ -41,11 +43,11 @@ $(function() {
                 console.log(item.message);
             });
         },
-        complete: function(data, textStatus){
+        complete: function(data, textStatus) {
             console.log('all loaded!');
         },
         error: function(xhr, errmsg, err) {
-            console.log(xhr.status + ": " + errmsg + ": "+ xhr.responseText);
+            console.log(xhr.status + ": " + errmsg + ": " + xhr.responseText);
         }
     });
 });
