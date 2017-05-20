@@ -1,5 +1,7 @@
 _temp/
 staticfiles/
+media-heroku/
+media-home/
 db.sqlite3
 run_env.bat
 *.pyc
