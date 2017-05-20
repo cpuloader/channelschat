@@ -11,3 +11,4 @@ djangorestframework
 drf-nested-routers
 djangorestframework-jwt
 django-cors-headers
+Pillow
