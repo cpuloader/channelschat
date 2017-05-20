@@ -28,4 +28,4 @@ urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
     url(r'^new/$', new_room, name='new_room'),
     url(r'^room/(?P<label>[\w-]{,50})/$', chat_room, name='chat_room'),
-]# + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
