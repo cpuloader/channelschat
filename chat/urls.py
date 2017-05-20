@@ -1,6 +1,6 @@
 from django.conf.urls import include, url
 from django.conf import settings
-#from django.conf.urls.static import static # to remove in prod
+from django.conf.urls.static import static # to remove in prod
 from django.contrib import admin
 from rest_framework_nested import routers
 
