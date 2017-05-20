@@ -1,14 +1,27 @@
 import os
 import random
-import string
+import datetime
 import dj_database_url
 import asgi_redis
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 
-SECRET_KEY = os.environ.get("SECRET_KEY", "".join(random.choice(string.printable) for i in range(40)))
-DEBUG = os.environ.get("DEBUG", False)
+#SECRET_KEY = os.environ.get("SECRET_KEY", "".join(random.choice(string.printable) for i in range(40)))
+SECRET_KEY = '0!25=1id9)(b_4meaeokt0h$p4l1&&g&86mmezd2op&&sum_j#'
+
+#DEBUG = os.environ.get("DEBUG", False)
+DEBUG = True
+
+# Allow all host headers
+ALLOWED_HOSTS = []
+
+CORS_ORIGIN_WHITELIST = (
+    'localhost:4200',
+    'localhost:3000',
+    'localhost:8000',
+    '127.0.0.1:8000'
+)
 
 # Application definition
 INSTALLED_APPS = (
@@ -18,20 +31,24 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
     'channels',
+    'corsheaders',
+    'authentication',
     'chat',
 )
 
 MIDDLEWARE_CLASSES = (
-    'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.middleware.security.SecurityMiddleware',
+    #'whitenoise.middleware.WhiteNoiseMiddleware',
 )
 
 ROOT_URLCONF = 'chat.urls'
@@ -56,17 +73,18 @@ TEMPLATES = (
 # Database
 # https://docs.djangoproject.com/en/1.9/ref/settings/#databases
 
-DATABASES = {     # for heroku
-    'default': dj_database_url.config(default="postgres:///postgresql-rigid-58677", conn_max_age=500)
-}
-
-#DATABASES = {
-#    'default': {
-#        'ENGINE': 'django.db.backends.sqlite3',
-#        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-#    }
+#DATABASES = {     # for heroku
+#    'default': dj_database_url.config(default="postgres:///postgresql-rigid-58677", conn_max_age=500)
 #}
 
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    }
+}
+
+AUTH_USER_MODEL = 'authentication.Account'
 
 AUTH_PASSWORD_VALIDATORS = (
     {
@@ -94,14 +112,13 @@ USE_TZ = True
 # Honor the 'X-Forwarded-Proto' header for request.is_secure()
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
-# Allow all host headers
-ALLOWED_HOSTS = ['*']
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATIC_URL = '/static/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'
 
 # Extra places for collectstatic to find static files.
 STATICFILES_DIRS = [
@@ -145,17 +162,22 @@ LOGGING = {
 }
 
 REST_FRAMEWORK = {
-    #'DEFAULT_PERMISSION_CLASSES': (
-    #    'rest_framework.permissions.IsAuthenticated',
-    #),
-    #'DEFAULT_AUTHENTICATION_CLASSES': (
-    #    'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
-    #    'rest_framework.authentication.SessionAuthentication',
-    #    'rest_framework.authentication.BasicAuthentication',
-    #),
+    'DEFAULT_PERMISSION_CLASSES': (
+        #'rest_framework.permissions.IsAuthenticated',
+    ),
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
+        #'rest_framework.authentication.SessionAuthentication',
+        #'rest_framework.authentication.BasicAuthentication',
+    ),
     'DEFAULT_PARSER_CLASSES': (
         'rest_framework.parsers.JSONParser',
         'rest_framework.parsers.FormParser',
         'rest_framework.parsers.MultiPartParser',
     ),
 }
+
+JWT_AUTH = {
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(days=20),
+    'JWT_AUTH_HEADER_PREFIX': 'Bearer',
+} 

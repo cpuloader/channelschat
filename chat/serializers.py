@@ -2,23 +2,33 @@ from rest_framework import serializers, status
 from rest_framework.response import Response
 #from rest_framework.pagination import PageNumberPagination
 
+from authentication.serializers import AccountSerializer
+from authentication.models import Account
 from chat.models import Room, Message
 
 
 class RoomSerializer(serializers.ModelSerializer):
+    members = AccountSerializer(many=True, read_only=True, required=False)
+    messages = serializers.PrimaryKeyRelatedField(many=True, read_only=True, allow_null=True)
 
     class Meta:
         model = Room
-        fields = ('id', 'name', 'label')
-        read_only_fields = ('id',)
+        fields = ('id', 'name', 'label', 'members', 'messages')
+        read_only_fields = ('id', 'name', 'label')
 
     #def get_validation_exclusions(self, *args, **kwargs):
     #    exclusions = super(ChatMessageSerializer, self).get_validation_exclusions()
     #    return exclusions + ['author']
 
 class MessageSerializer(serializers.ModelSerializer):
+    author = AccountSerializer(read_only=True, required=False)
 
     class Meta:
         model = Message
-        fields = ('id', 'room', 'handle', 'message', 'timestamp')
+        fields = ('id', 'room', 'handle', 'message', 'timestamp', 'author', 'checked')
         read_only_fields = ('id',)
+
+    #def create(self, validated_data):
+    #    print(validated_data)
+    #    instance = Account.objects.create(**validated_data)
+    #    return instance

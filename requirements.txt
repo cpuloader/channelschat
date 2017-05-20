@@ -9,3 +9,5 @@ psycopg2
 asgi_redis
 djangorestframework
 drf-nested-routers
+djangorestframework-jwt
+django-cors-headers

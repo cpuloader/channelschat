@@ -1,8 +1,11 @@
+_temp/
 staticfiles/
 db.sqlite3
 run_env.bat
 *.pyc
 __pycache__
 Procfile.windows
-settings.py-for-home
-settings.py-for-heroku
+*.*home
+*.*heroku
+*.*old
+*old.*

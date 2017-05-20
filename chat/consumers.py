@@ -3,7 +3,11 @@ import json
 import logging
 from channels import Group
 from channels.sessions import channel_session
+
 from .models import Room
+from authentication.models import Account
+from .serializers import MessageSerializer
+from chat import signals
 
 log = logging.getLogger(__name__)
 
@@ -13,30 +17,30 @@ def ws_connect(message):
     # form /chat/{label}/, and finds a Room if the message path is applicable,
     # and if the Room exists. Otherwise, bails (meaning this is a some othersort
     # of websocket). So, this is effectively a version of _get_object_or_404.
-    
     try:
-        prefix, label = message['path'].decode('ascii').strip('/').split('/')
-        print('room connect:', label)
+        prefix, user_id = message['path'].decode('ascii').strip('/').split('/')
+        print('room connect:', user_id)
         if prefix != 'chat':
             log.debug('invalid ws path=%s', message['path'])
             return
-        room = Room.objects.get(label=label)
+
+        user = Account.objects.get(pk=user_id)
     except ValueError:
-        log.debug('invalid ws path=%s', message['path'])
+        log.debug('invalid user=%s', user_id)
         return
-    except Room.DoesNotExist:
-        log.debug('ws room does not exist label=%s', label)
+    except Account.DoesNotExist:
+        log.debug('ws user does not exist id=%s', user_id)
         return
 
     log.debug('chat connect room=%s client=%s:%s', 
-        room.label, message['client'][0], message['client'][1])
+        user.pk, message['client'][0], message['client'][1])
 
     message.reply_channel.send({"accept": True})
-    message.channel_session['room'] = room.label
-    print('room connect:', label)
+    message.channel_session['room'] = user_id
+    print('room connect:', user_id)
     # Need to be explicit about the channel layer so that testability works
     # This may be a FIXME?
-    Group('chat-' + label, channel_layer=message.channel_layer).add(message.reply_channel)
+    Group('chat-' + str(user_id), channel_layer=message.channel_layer).add(message.reply_channel)
 
     
 
@@ -44,13 +48,13 @@ def ws_connect(message):
 def ws_receive(message):
     # Look up the room from the channel session, bailing if it doesn't exist
     try:
-        label = message.channel_session['room']
-        room = Room.objects.get(label=label)
+        user_id = message.channel_session['room']
+        user = Account.objects.get(pk=user_id)
     except KeyError:
-        log.debug('no room in channel_session')
+        log.debug('no user in channel_session')
         return
-    except Room.DoesNotExist:
-        log.debug('recieved message, buy room does not exist label=%s', label)
+    except Account.DoesNotExist:
+        log.debug('recieved message, but user does not exist id=%s', user_id)
         return
 
     # Parse out a chat message from the content text, bailing if it doesn't
@@ -61,24 +65,27 @@ def ws_receive(message):
         log.debug("ws message isn't json text=%s", text)
         return
     
-    if set(data.keys()) != set(('handle', 'message')):
-        log.debug("ws message unexpected format data=%s", data)
-        return
+    #if set(data.keys()) != set(('handle', 'message', 'room')):
+    #    log.debug("ws message unexpected format data=%s", data)
+    #    return
 
     if data:
         log.debug('chat message room=%s handle=%s message=%s', 
-            room.label, data['handle'], data['message'])
-        m = room.messages.create(**data)
-        print('room receive:', label)
+            user.user_id, data['handle'], data['message'])
+        #a = Account.objects.get(pk=data['author']['id'])
+        #m = room.messages.create(handle=data['handle'], message=data['message'], author=a)
+        print('room receive:', user_id)
         # See above for the note about Group
-        Group('chat-' + label, channel_layer=message.channel_layer).send({'text': json.dumps(m.as_dict())})
+        #serializer = MessageSerializer(m)
+        #print(serializer.data)
+        #Group('chat-' + str(user_id), channel_layer=message.channel_layer).send({'text': json.dumps(m.as_dict())})
 
 @channel_session
 def ws_disconnect(message):
     try:
-        label = message.channel_session['room']
-        room = Room.objects.get(label=label)
-        print('room disconnect:', label)
-        Group('chat-' + label, channel_layer=message.channel_layer).discard(message.reply_channel)
-    except (KeyError, Room.DoesNotExist):
+        user_id = message.channel_session['room']
+        user = Account.objects.get(pk=user_id)
+        print('room disconnect:', user_id)
+        Group('chat-' + str(user_id), channel_layer=message.channel_layer).discard(message.reply_channel)
+    except (KeyError, Account.DoesNotExist):
         pass
