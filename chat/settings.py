@@ -70,6 +70,7 @@ DATABASES = {     # for heroku
 #    }
 #}
 
+AUTH_USER_MODEL = 'authentication.Account'
 
 AUTH_PASSWORD_VALIDATORS = (
     {
