@@ -5,8 +5,10 @@ from django.core.cache import cache
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.db import models
 from django.core.exceptions import ObjectDoesNotExist
+from django.core.files import File
 from django.core import validators
 from django.conf import settings
+from .utilmodels import MyImageField
 
 from .utils import resize_avatar_picture
 
@@ -48,8 +50,10 @@ class Account(AbstractBaseUser):
     is_admin = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    picture = models.ImageField(upload_to='profile_pics', blank=True, 
-        default="profile_pics/default_profile.jpg")
+    #picture = models.ImageField(upload_to='profile_pics', blank=True, 
+    #    default="profile_pics/default_profile.jpg")
+    picture = MyImageField(blank=True)      # MyImageField with custom validation
+    picture_mini = MyImageField(blank=True)
     enabled = models.BooleanField(default=True, verbose_name='Enabled')
 
     objects = AccountManager()
@@ -83,40 +87,27 @@ class Account(AbstractBaseUser):
         return self.is_admin
 
     def save(self, *args, **kwargs):
-        pic_is_new = False
+        new_pic = False
         try:
             this_record = Account.objects.get(pk=self.pk)
             if this_record.picture != self.picture:
-                pic_is_new = True
-                if "default_profile.jpg" not in this_record.picture.path:
-                    fullpath, ext = os.path.splitext(this_record.picture.path)
-                    new_name, new_name_ext = os.path.splitext(self.picture.name)
-                    #print(fullpath + "_post" + ext)
-                    try:
-                        os.remove(fullpath + "_post" + ext)
-                        os.remove(fullpath + "_comment" + ext)
-                        self.picture.name = new_name + new_name_ext.lower()
-                    except EnvironmentError as err:
-                        print('File not found: ', fullpath, err)
+                new_pic = True
+                try:
                     this_record.picture.delete(save = False)
-                    
+                    this_record.picture_mini.delete(save = False)
+                except Exception:
+                    pass
+                self.picture.storage.set_image_size((500,500))
         except ValueError:
             pass
         except ObjectDoesNotExist:
             pass
         super(Account, self).save(*args, **kwargs)
-        if pic_is_new:
-            resize_avatar_picture(self.picture)
-            fullname, ext = os.path.splitext(self.picture.name)
-            new_name = fullname + '.jpg'
-            print('old_name: ', self.picture.name, 'new_name: ', new_name)
-            if self.picture.name != new_name and "default_profile.jpg" not in self.picture.path:
-                try:
-                    os.remove(self.picture.path)
-                except EnvironmentError as err:
-                    print('File not found: ', err)
-            self.picture.name = new_name
-            super(Account, self).save(*args, **kwargs)   # save with right picture filename
+        if new_pic and self.picture:
+            reopen = self.picture.storage.open(self.picture.name)
+            self.picture_mini.storage.is_thumb(True)
+            self.picture.storage.set_image_size((100,100))
+            self.picture_mini.save(self.picture.name, reopen, save=True)
 
     def last_seen(self):
         return cache.get('seen_%s' % self.username)
@@ -133,9 +124,13 @@ class Account(AbstractBaseUser):
             return False
 
     def as_dict(self):
+        if self.picture:
+            pic_url = self.picture.url
+        else:
+            pic_url = ''
         return {'email': self.email, 
                 'username': self.username, 
-                'picture': self.picture.url,
+                'picture': pic_url,
                 'id': self.pk,
                 'tagline': self.tagline
                }

@@ -1,5 +1,7 @@
 _temp/
+cloudinary.txt
 staticfiles/
+media/
 media-heroku/
 media-home/
 db.sqlite3

@@ -5,7 +5,7 @@ from django.contrib import admin
 from rest_framework_nested import routers
 
 from .views import about, new_room, chat_room, MessagesViewSet, RoomsViewSet, RoomMessagesViewSet
-from authentication.views import AuthRegister, AccountViewSet #AccountListView
+from authentication.views import AuthRegister, AccountViewSet
 
 router = routers.SimpleRouter()
 router.register(r'accounts', AccountViewSet)
@@ -21,7 +21,6 @@ urlpatterns = [
     url(r'^api/v1/', include(router.urls)),
     url(r'^api/v1/auth/', include('authentication.urls')),
     url(r'^api/v1/register', AuthRegister.as_view()),
-    #url(r'^api/v1/accounts', AccountListView.as_view()),
     url(r'^api/v1/', include(rooms_router.urls)),
 
     url(r'^$',  about, name='about'),
