@@ -52,8 +52,8 @@ class Account(AbstractBaseUser):
     updated_at = models.DateTimeField(auto_now=True)
     #picture = models.ImageField(upload_to='profile_pics', blank=True, 
     #    default="profile_pics/default_profile.jpg")
-    picture = MyImageField(blank=True)      # MyImageField with custom validation
-    picture_mini = MyImageField(blank=True)
+    picture = MyImageField(blank=True, null=True)      # MyImageField with custom validation
+    picture_mini = MyImageField(blank=True, null=True)
     enabled = models.BooleanField(default=True, verbose_name='Enabled')
 
     objects = AccountManager()
