@@ -21,10 +21,9 @@ class AccountSerializer(serializers.ModelSerializer):
         read_only_fields = ('created_at', 'updated_at', 'is_online')
     """
     def create(self, validated_data):
-        password = validated_data.get('password', None)
+        print(validated_data)
         if password:
             instance = Account.objects.create(**validated_data)
-            instance.set_password(password)
         return instance
     """
     def update(self, instance, validated_data):
