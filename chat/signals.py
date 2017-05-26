@@ -8,12 +8,14 @@ from .models import Message, Room
 
 @receiver(post_save, sender=Message)
 def new_message_handler(**kwargs):
+    #print(kwargs)
+    message = kwargs['instance']
+    room = message.room
+    receivers = room.members.all()
     if kwargs['created']:
-        message = kwargs['instance']
-        room = message.room
-        receivers = room.members.all()
         for receiver in receivers:
             if receiver.pk!= message.author.pk:
-            #avail_serializer = GameSerializer(avail_game_list, many=True)
                 print('signal to ', receiver.pk);
                 Group('chat-' + str(receiver.pk)).send({'text': json.dumps(message.as_dict())})
+    if not kwargs['created']:
+        Group('chat-' + str(message.author.pk)).send({'text': json.dumps(message.as_dict())})

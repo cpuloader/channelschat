@@ -16,21 +16,21 @@ class Room(models.Model):
 
 class Message(models.Model):
     room = models.ForeignKey(Room, related_name='messages')
-    handle = models.TextField()
+    #handle = models.TextField()
     message = models.TextField()
     timestamp = models.DateTimeField(default=timezone.now, db_index=True)
     author = models.ForeignKey(Account)
     checked = models.BooleanField(default=False)
 
     def __unicode__(self):
-        return '[{timestamp}] {handle}: {message}'.format(**self.as_dict())
+        return '[{timestamp}] {author}: {message}'.format(**self.as_dict())
 
     @property
     def formatted_timestamp(self):
         return self.timestamp.strftime('%A, %d. %B %Y %I:%M%p')
     
     def as_dict(self):
-        return {'handle': self.handle, 
+        return {'room': self.room.pk, 
                 'message': self.message, 
                 'timestamp': self.timestamp.isoformat(),
                 'id': self.pk,

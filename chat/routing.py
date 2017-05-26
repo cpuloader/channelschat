@@ -1,5 +1,7 @@
 from channels.staticfiles import StaticFilesConsumer
 from channels.routing import route
+from django.conf import settings
+
 from . import consumers
 
 channel_routing = [
@@ -13,3 +15,6 @@ channel_routing = [
     route('websocket.receive', consumers.ws_receive),
     route('websocket.disconnect', consumers.ws_disconnect),
 ]
+
+if settings.DEBUG:
+    channel_routing += [ route('http.request', StaticFilesConsumer()) ]

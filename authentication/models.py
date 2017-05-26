@@ -51,8 +51,6 @@ class Account(AbstractBaseUser):
     is_admin = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    #picture = models.ImageField(upload_to='profile_pics', blank=True, 
-    #    default="profile_pics/default_profile.jpg")
     picture = MyImageField(blank=True, null=True)      # MyImageField with custom validation
     picture_mini = MyImageField(blank=True, null=True)
     enabled = models.BooleanField(default=True, verbose_name='Enabled')
@@ -129,9 +127,15 @@ class Account(AbstractBaseUser):
             pic_url = self.picture.url
         else:
             pic_url = ''
+        if self.picture_mini:
+            pic_mini_url = self.picture_mini.url
+        else:
+            pic_mini_url = ''
         return {'email': self.email, 
                 'username': self.username, 
                 'picture': pic_url,
+                'picture_mini': pic_mini_url,
                 'id': self.pk,
-                'tagline': self.tagline
+                'tagline': self.tagline,
+                'is_online' : self.is_online()
                }

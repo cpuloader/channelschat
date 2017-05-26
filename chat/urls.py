@@ -1,10 +1,12 @@
 from django.conf.urls import include, url
 from django.conf import settings
-#from django.conf.urls.static import static # to remove in prod
 from django.contrib import admin
 from rest_framework_nested import routers
 
-from .views import about, new_room, chat_room, MessagesViewSet, RoomsViewSet, RoomMessagesViewSet
+if settings.DEBUG:
+    from django.conf.urls.static import static
+
+from .views import index, MessagesViewSet, RoomsViewSet, RoomMessagesViewSet
 from authentication.views import AuthRegister, AccountViewSet
 
 router = routers.SimpleRouter()
@@ -23,8 +25,9 @@ urlpatterns = [
     url(r'^api/v1/register', AuthRegister.as_view()),
     url(r'^api/v1/', include(rooms_router.urls)),
 
-    url(r'^$',  about, name='about'),
+    url(r'^$',  index, name='index'),
     url(r'^admin/', include(admin.site.urls)),
-    url(r'^new/$', new_room, name='new_room'),
-    url(r'^room/(?P<label>[\w-]{,50})/$', chat_room, name='chat_room'),
-]# + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

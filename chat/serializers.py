@@ -25,10 +25,11 @@ class MessageSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Message
-        fields = ('id', 'room', 'handle', 'message', 'timestamp', 'author', 'checked')
+        fields = ('id', 'room', 'message', 'timestamp', 'author', 'checked')
         read_only_fields = ('id',)
-
-    #def create(self, validated_data):
-    #    print(validated_data)
-    #    instance = Account.objects.create(**validated_data)
-    #    return instance
+    """
+    def create(self, validated_data):
+        instance = Message.objects.create(**validated_data)
+        instance.checked = True;
+        return instance
+    """

@@ -71,7 +71,7 @@ def ws_receive(message):
 
     if data:
         log.debug('chat message room=%s handle=%s message=%s', 
-            user.user_id, data['handle'], data['message'])
+            user.user_id, data['message'])
         #a = Account.objects.get(pk=data['author']['id'])
         #m = room.messages.create(handle=data['handle'], message=data['message'], author=a)
         print('room receive:', user_id)

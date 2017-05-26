@@ -3,6 +3,7 @@ import random, string
 import datetime
 import dj_database_url
 import asgi_redis
+import mymiddleware
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
@@ -36,6 +37,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'mymiddleware.activeuser_middleware.ActiveUserMiddleware',
 )
 
 ROOT_URLCONF = 'chat.urls'
@@ -179,3 +181,13 @@ CLOUDINARY_STORAGE = {
 }
 
 DEFAULT_FILE_STORAGE = 'chat.imagestorage.MyMediaCloudinaryStorage'
+
+USER_ONLINE_TIMEOUT = 300
+USER_LASTSEEN_TIMEOUT = 60 * 60 * 24 * 7
+
+CACHES = {
+    'default': {
+        'BACKEND': 'redis_cache.RedisCache',
+        'LOCATION': os.environ.get('REDIS_URL', 'redis://localhost:6379')
+    }
+}
