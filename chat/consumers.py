@@ -70,15 +70,15 @@ def ws_receive(message):
     #    return
 
     if data:
-        log.debug('chat message room=%s handle=%s message=%s', 
-            user.user_id, data['message'])
+        log.debug('chat message room=%s message=%s', 
+            user.pk, data['message'])
         #a = Account.objects.get(pk=data['author']['id'])
         #m = room.messages.create(handle=data['handle'], message=data['message'], author=a)
         print('room receive:', user_id)
         # See above for the note about Group
         #serializer = MessageSerializer(m)
         #print(serializer.data)
-        #Group('chat-' + str(user_id), channel_layer=message.channel_layer).send({'text': json.dumps(m.as_dict())})
+        Group('chat-' + str(user_id), channel_layer=message.channel_layer).send({'text': message['text']})
 
 @channel_session
 def ws_disconnect(message):
