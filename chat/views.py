@@ -71,7 +71,7 @@ class RoomsViewSet(viewsets.ModelViewSet):
                 print('no results, creating new')
                 member1_pk = user2 = self.request.data['members'][0]['id']
                 member2_pk = user2 = self.request.data['members'][1]['id']
-                new_chat = Room.objects.create(label = haikunator.haikunate())
+                new_chat = Room.objects.create()
                 new_chat.members = [member1_pk, member2_pk]
                 serializer = self.get_serializer(new_chat)
                 headers = self.get_success_headers(serializer.data)
