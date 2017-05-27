@@ -9,11 +9,14 @@ from rest_framework.response import Response
 from rest_framework import serializers
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 
+from haikunator import Haikunator
+
 from .models import Room, Message
 from .serializers import RoomSerializer, MessageSerializer
 from .permissions import IsMemberOfRoom, IsAuthorOfMessage, IsMemberOfMessageRoom
 from authentication.models import Account
 
+haikunator = Haikunator()
 
 def index(request):
     return render(request, "base.html")
@@ -71,7 +74,7 @@ class RoomsViewSet(viewsets.ModelViewSet):
                 print('no results, creating new')
                 member1_pk = user2 = self.request.data['members'][0]['id']
                 member2_pk = user2 = self.request.data['members'][1]['id']
-                new_chat = Room.objects.create()
+                new_chat = Room.objects.create(label=haikunator.haikunate())
                 new_chat.members = [member1_pk, member2_pk]
                 serializer = self.get_serializer(new_chat)
                 headers = self.get_success_headers(serializer.data)
