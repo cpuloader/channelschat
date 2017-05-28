@@ -49,7 +49,7 @@ def ws_receive(message):
     # Look up the room from the channel session, bailing if it doesn't exist
     try:
         user_id = message.channel_session['room']
-        user = Account.objects.get(pk=user_id)
+        #user = Account.objects.get(pk=user_id)
     except KeyError:
         log.debug('no user in channel_session')
         return
@@ -71,7 +71,7 @@ def ws_receive(message):
 
     if data:
         log.debug('chat message room=%s message=%s', 
-            user.pk, data['message'])
+            user_id, data['message'])
         #a = Account.objects.get(pk=data['author']['id'])
         #m = room.messages.create(handle=data['handle'], message=data['message'], author=a)
         print('room receive:', user_id)
@@ -84,7 +84,7 @@ def ws_receive(message):
 def ws_disconnect(message):
     try:
         user_id = message.channel_session['room']
-        user = Account.objects.get(pk=user_id)
+        #user = Account.objects.get(pk=user_id)
         print('room disconnect:', user_id)
         Group('chat-' + str(user_id), channel_layer=message.channel_layer).discard(message.reply_channel)
     except (KeyError, Account.DoesNotExist):
