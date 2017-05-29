@@ -1,13 +1,17 @@
 import random
 import string
+import datetime
+
+from django.utils import timezone
 from django.db import transaction
-from django.db.models import Count
+from django.db.models import Count, Q
 from django.shortcuts import render, redirect
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import permissions, viewsets, status
 from rest_framework.response import Response
 from rest_framework import serializers
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
+from rest_framework.pagination import LimitOffsetPagination
 
 from haikunator import Haikunator
 
@@ -94,7 +98,7 @@ class RoomsViewSet(viewsets.ModelViewSet):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 class RoomMessagesViewSet(viewsets.ModelViewSet):
-    queryset = Message.objects.select_related('room').order_by('timestamp')
+    queryset = Message.objects.select_related('room').order_by('-timestamp')
     serializer_class = MessageSerializer
     authentication_classes = (JSONWebTokenAuthentication,)
 
@@ -104,5 +108,17 @@ class RoomMessagesViewSet(viewsets.ModelViewSet):
         return (permissions.IsAuthenticated(), IsMemberOfMessageRoom(),) 
     
     def get_queryset(self):
-        queryset = self.queryset.filter(room__id=self.kwargs['room_pk'])
+        if self.request.GET.get('unread'):
+            last_received = int(self.request.GET['last_received']) # convert str to int
+            last_received = datetime.datetime.fromtimestamp(last_received / 1000, timezone.utc)
+            unread = map(int, self.request.GET['unread'].split(',')) # str list convert to int
+            queryset = self.queryset.filter(Q(room__id=self.kwargs['room_pk'], timestamp__range=(last_received, timezone.now()))|Q(id__in=unread)|Q(room__id=self.kwargs['room_pk'], checked=False))
+            print('unread')
+        elif self.request.GET.get('last_received'):
+            last_received = int(self.request.GET['last_received']) # convert str to int
+            last_received = datetime.datetime.fromtimestamp(last_received / 1000, timezone.utc)
+            queryset = self.queryset.filter(Q(room__id=self.kwargs['room_pk'], timestamp__range=(last_received, timezone.now()))|Q(room__id=self.kwargs['room_pk'], checked=False))
+            print('last_received')
+        else:
+            queryset = self.queryset.filter(room__id=self.kwargs['room_pk'])
         return queryset

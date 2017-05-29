@@ -167,6 +167,7 @@ REST_FRAMEWORK = {
         'rest_framework.parsers.FormParser',
         'rest_framework.parsers.MultiPartParser',
     ),
+    'PAGE_SIZE': 30
 }
 
 JWT_AUTH = {
