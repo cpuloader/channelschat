@@ -4,6 +4,7 @@ import datetime
 import dj_database_url
 import asgi_redis
 import mymiddleware
+import whitenoise
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
@@ -116,6 +117,7 @@ MEDIA_URL = '/media/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]
+STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
 
 # Channel settings
 CHANNEL_LAYERS = {

@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from authentication.serializers import AccountSerializer
 from authentication.models import Account
 from chat.models import Room, Message
-
+from chat.filter import rebuild_text
 
 class RoomSerializer(serializers.ModelSerializer):
     members = AccountSerializer(many=True, read_only=True, required=False)
@@ -27,9 +27,8 @@ class MessageSerializer(serializers.ModelSerializer):
         model = Message
         fields = ('id', 'room', 'message', 'timestamp', 'author', 'checked')
         read_only_fields = ('id',)
-    """
+    
     def create(self, validated_data):
+        validated_data['message'] = rebuild_text(validated_data.get('message'))
         instance = Message.objects.create(**validated_data)
-        instance.checked = True;
         return instance
-    """
