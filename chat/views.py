@@ -19,6 +19,7 @@ from .models import Room, Message
 from .serializers import RoomSerializer, MessageSerializer
 from .permissions import IsMemberOfRoom, IsAuthorOfMessage, IsMemberOfMessageRoom
 from authentication.models import Account
+from .filter import rebuild_text
 
 haikunator = Haikunator()
 
@@ -33,12 +34,18 @@ class MessagesViewSet(viewsets.ModelViewSet):
 
     def get_permissions(self):
         if self.request.method in permissions.SAFE_METHODS:
-            return (permissions.IsAuthenticated(),) #IsAuthenticated(),) 
-        return (permissions.IsAuthenticated(),)    #IsAuthenticated(),
+            return (permissions.IsAuthenticated(), IsMemberOfMessageRoom(),)
+        return (permissions.IsAuthenticated(), IsMemberOfMessageRoom(),)
+
+    def create(self, request, *args, **kwargs):
+        self.request.data['message'] = rebuild_text(self.request.data.get('message')) # magic bredalizer
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
     def perform_create(self, serializer):
-        #print("user id: ", self.request.user.id)
-        #print(self.request.data)
         instance = serializer.save(author_id=self.request.user.id)
         return super(MessagesViewSet, self).perform_create(serializer)
 

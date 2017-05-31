@@ -4,6 +4,8 @@ from django.db import models
 from django.utils import timezone
 
 from authentication.models import Account
+from chat.filter import rebuild_text
+
 
 class Room(models.Model):
     name = models.TextField()
@@ -16,7 +18,6 @@ class Room(models.Model):
 
 class Message(models.Model):
     room = models.ForeignKey(Room, related_name='messages')
-    #handle = models.TextField()
     message = models.TextField()
     timestamp = models.DateTimeField(default=timezone.now, db_index=True)
     author = models.ForeignKey(Account)

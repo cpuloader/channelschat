@@ -23,7 +23,8 @@ def rebuild_text(original_text):
     filepath = os.path.join(settings.BASE_DIR, 'basedict_l.dat')
     data = load(filepath)
     maxwordlen = 30
-    raw_text = original_text.encode('utf-8').translate(None, string.punctuation)
+    punctuation = string.punctuation.replace('-','!')
+    raw_text = original_text.encode('utf-8').translate(None, punctuation)
     raw_text = raw_text.decode('utf-8')
     #print('your text:', raw_text)
     text_words = raw_text.split()
