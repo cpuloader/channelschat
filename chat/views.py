@@ -19,6 +19,7 @@ from .models import Room, Message
 from .serializers import RoomSerializer, MessageSerializer
 from .permissions import IsMemberOfRoom, IsAuthorOfMessage, IsMemberOfMessageRoom
 from authentication.models import Account
+from mymiddleware.activeuser_middleware import get_user_jwt
 from .filter import rebuild_text
 
 haikunator = Haikunator()
@@ -32,13 +33,18 @@ class MessagesViewSet(viewsets.ModelViewSet):
     serializer_class = MessageSerializer
     authentication_classes = (JSONWebTokenAuthentication,)
 
+    def paginate_queryset(self, queryset, view=None): # turn off pagination
+        return None
+
     def get_permissions(self):
         if self.request.method in permissions.SAFE_METHODS:
             return (permissions.IsAuthenticated(), IsMemberOfMessageRoom(),)
         return (permissions.IsAuthenticated(), IsMemberOfMessageRoom(),)
 
     def create(self, request, *args, **kwargs):
-        self.request.data['message'] = rebuild_text(self.request.data.get('message')) # magic bredalizer
+        # magic bredalizer here:
+        self.request.data['message'] = rebuild_text(self.request.data.get('message'))
+        # magic ends here
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
@@ -48,6 +54,15 @@ class MessagesViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         instance = serializer.save(author_id=self.request.user.id)
         return super(MessagesViewSet, self).perform_create(serializer)
+
+    def list(self, request, *args, **kwargs):
+        if self.request.GET.get('unread'):
+            user = get_user_jwt(self.request)   # username = email here
+            queryset = Message.objects.filter(checked=False, room__members=user).exclude(author__id=user.pk)
+        else:
+            queryset = Message.objects.all()
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
 
 
 class RoomsViewSet(viewsets.ModelViewSet):
@@ -120,12 +135,10 @@ class RoomMessagesViewSet(viewsets.ModelViewSet):
             last_received = datetime.datetime.fromtimestamp(last_received / 1000, timezone.utc)
             unread = map(int, self.request.GET['unread'].split(',')) # str list convert to int
             queryset = self.queryset.filter(Q(room__id=self.kwargs['room_pk'], timestamp__range=(last_received, timezone.now()))|Q(id__in=unread)|Q(room__id=self.kwargs['room_pk'], checked=False))
-            print('unread')
         elif self.request.GET.get('last_received'):
             last_received = int(self.request.GET['last_received']) # convert str to int
             last_received = datetime.datetime.fromtimestamp(last_received / 1000, timezone.utc)
             queryset = self.queryset.filter(Q(room__id=self.kwargs['room_pk'], timestamp__range=(last_received, timezone.now()))|Q(room__id=self.kwargs['room_pk'], checked=False))
-            print('last_received')
         else:
             queryset = self.queryset.filter(room__id=self.kwargs['room_pk'])
         return queryset

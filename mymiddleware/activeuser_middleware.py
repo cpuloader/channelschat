@@ -25,6 +25,6 @@ class ActiveUserMiddleware(MiddlewareMixin):
         current_user = request.user
         if hasattr(current_user, 'username'):
             now = datetime.datetime.now()
-            cache.set('seen_%s' % (current_user.username), now, 
+            cache.set('seen_%s' % (current_user.username), now,
                            settings.USER_LASTSEEN_TIMEOUT)
             #print(cache.get('seen_%s' % current_user.username), current_user.username)
