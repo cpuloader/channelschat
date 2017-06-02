@@ -28,7 +28,7 @@ def rebuild_text(original_text):
     raw_text = raw_text.decode('utf-8')
     #print('your text:', raw_text)
     text_words = raw_text.split()
-    length = random.randint(0, len(raw_text))
+    length = random.randint(2, len(raw_text))
     out = markov.generate(data, length, 2, join_char="")
     #print('raw generated:', out)
     out = out.split()

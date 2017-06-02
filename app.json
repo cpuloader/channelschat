@@ -1,6 +1,6 @@
 {
-  "name": "Start on Heroku: Python",
-  "description": "A barebones Python app, which can easily be deployed to Heroku.",
+  "name": "Chat app",
+  "description": "Chat on Angular with Django channels.",
   "image": "heroku/python",
   "repository": "https://github.com/cpuloader/channelschat",
   "keywords": ["python", "django" ]
