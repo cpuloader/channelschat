@@ -6,6 +6,7 @@ media-heroku/
 media-home/
 db.sqlite3
 run_env.bat
+run_env3.bat
 *.pyc
 __pycache__
 Procfile.windows

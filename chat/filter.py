@@ -1,7 +1,7 @@
 # coding: utf-8
 from pymarkov import markov
-import os, random
-import cPickle
+import os, random, sys
+import pickle
 import string
 
 from django.conf import settings
@@ -11,8 +11,8 @@ def load(filename):
     fh = None
     try:
         fh = open(filename, "rb")
-        data = cPickle.load(fh)
-    except (EnvironmentError, cPickle.UnpicklingError) as err:
+        data = pickle.load(fh)
+    except (EnvironmentError, pickle.UnpicklingError) as err:
         print("{0}: file load error: {1}".format(filename, err))
     finally:
         if fh is not None:
@@ -24,8 +24,12 @@ def rebuild_text(original_text):
     data = load(filepath)
     maxwordlen = 30
     punctuation = string.punctuation.replace('-','!')
-    raw_text = original_text.encode('utf-8').translate(None, punctuation)
-    raw_text = raw_text.decode('utf-8')
+    if sys.version_info[0] < 3:
+        raw_text = original_text.encode('utf-8').translate(None, punctuation)
+        raw_text = raw_text.decode('utf-8')
+    else:
+        punctuation_map = str.maketrans('', '', punctuation)
+        raw_text = original_text.translate(punctuation_map)
     #print('your text:', raw_text)
     text_words = raw_text.split()
     length = random.randint(2, len(raw_text))

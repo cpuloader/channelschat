@@ -25,6 +25,9 @@ from .filter import rebuild_text
 haikunator = Haikunator()
 
 def index(request):
+    print('session check: ', request.session.get('SESSION_KEY'))
+    user = request.user
+    print('user: ', user)
     return render(request, "base.html")
 
 

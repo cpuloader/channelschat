@@ -19,6 +19,7 @@ rooms_router = routers.NestedSimpleRouter( #router for getting messages in room 
 )
 rooms_router.register(r'messages', RoomMessagesViewSet)
 
+
 urlpatterns = [
     url(r'^api/v1/', include(router.urls)),
     url(r'^api/v1/auth/', include('authentication.urls')),

@@ -1,4 +1,4 @@
-import re
+import re, sys
 import json
 import logging
 from channels import Group
@@ -18,7 +18,10 @@ def ws_connect(message):
     # and if the Room exists. Otherwise, bails (meaning this is a some othersort
     # of websocket). So, this is effectively a version of _get_object_or_404.
     try:
-        prefix, user_id = message['path'].decode('ascii').strip('/').split('/')
+        if sys.version_info[0] < 3:
+            prefix, user_id = message['path'].decode('ascii').strip('/').split('/')
+        else:
+            prefix, user_id = message['path'].strip('/').split('/')
         print('room connect:', user_id)
         if prefix != 'chat':
             log.debug('invalid ws path=%s', message['path'])
