@@ -177,12 +177,6 @@ JWT_AUTH = {
     'JWT_AUTH_HEADER_PREFIX': 'Bearer',
 }
 
-CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': 'hkmlsgwph',
-    'API_KEY': '143387899338255',
-    'API_SECRET': '1dWKY_efoviXtn3G-l_tInhFXAI'
-}
-
 DEFAULT_FILE_STORAGE = 'chat.imagestorage.MyMediaCloudinaryStorage'
 
 USER_ONLINE_TIMEOUT = 300
