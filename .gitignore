@@ -14,3 +14,4 @@ Procfile.windows
 *.*heroku
 *.*old
 *old.*
+requirements-home.txt
