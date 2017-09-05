@@ -176,6 +176,8 @@ JWT_AUTH = {
     'JWT_AUTH_HEADER_PREFIX': 'Bearer',
 }
 
+YOUR_CLOUDINARY_NAME = os.environ.get("YOUR_CLOUDINARY_NAME") # you don't need it if you enter name in Angular frontend part
+
 DEFAULT_FILE_STORAGE = 'chat.imagestorage.MyMediaCloudinaryStorage'
 
 USER_ONLINE_TIMEOUT = 300

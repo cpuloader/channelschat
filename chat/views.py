@@ -7,6 +7,7 @@ from django.db import transaction
 from django.db.models import Count, Q
 from django.shortcuts import render, redirect
 from django.core.exceptions import ObjectDoesNotExist
+from django.conf import settings
 from rest_framework import permissions, viewsets, status
 from rest_framework.response import Response
 from rest_framework import serializers
@@ -25,10 +26,9 @@ from .filter import rebuild_text
 haikunator = Haikunator()
 
 def index(request):
-    print('session check: ', request.session.get('SESSION_KEY'))
-    user = request.user
-    print('user: ', user)
-    return render(request, "base.html")
+    return render(request, "base.html", {
+        'YOUR_CLOUDINARY_NAME': settings.YOUR_CLOUDINARY_NAME
+    })
 
 
 class MessagesViewSet(viewsets.ModelViewSet):
