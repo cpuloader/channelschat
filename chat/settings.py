@@ -9,8 +9,8 @@ import whitenoise
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 
-#SECRET_KEY = os.environ.get("SECRET_KEY", "".join(random.choice(string.printable) for i in range(40)))
 SECRET_KEY = os.environ.get("SECRET_KEY")
+
 DEBUG = False
 
 # Application definition
@@ -122,7 +122,6 @@ STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
 # Channel settings
 CHANNEL_LAYERS = {
     "default": {
-        #"BACKEND": "asgiref.inmemory.ChannelLayer", 
         "BACKEND": "asgi_redis.RedisChannelLayer",
         "CONFIG": {
             "hosts": [os.environ.get('REDIS_URL', 'redis://localhost:6379')],

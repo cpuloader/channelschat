@@ -24,10 +24,9 @@ class AccountManager(BaseUserManager):
             email=self.normalize_email(email), username=kwargs.get('username'),
             tagline=kwargs.get('tagline', '')
         )
-
+        
         account.set_password(password)
         account.save()
-
         return account
 
     def create_superuser(self, email, password, **kwargs):

@@ -14,7 +14,7 @@ log = logging.getLogger(__name__)
 @channel_session
 def ws_connect(message):
     # Extract the room from the message. This expects message.path to be of the
-    # form /chat/{label}/, and finds a Room if the message path is applicable,
+    # form /chat/{user_id}/, and finds a Room if the message path is applicable,
     # and if the Room exists. Otherwise, bails (meaning this is a some othersort
     # of websocket). So, this is effectively a version of _get_object_or_404.
     try:
@@ -68,19 +68,10 @@ def ws_receive(message):
         log.debug("ws message isn't json text=%s", text)
         return
     
-    #if set(data.keys()) != set(('handle', 'message', 'room')):
-    #    log.debug("ws message unexpected format data=%s", data)
-    #    return
-
     if data:
         log.debug('chat message room=%s message=%s', 
             user_id, data['message'])
-        #a = Account.objects.get(pk=data['author']['id'])
-        #m = room.messages.create(handle=data['handle'], message=data['message'], author=a)
-        print('room receive:', user_id)
-        # See above for the note about Group
-        #serializer = MessageSerializer(m)
-        #print(serializer.data)
+        #print('room receive:', user_id)
         Group('chat-' + str(user_id), channel_layer=message.channel_layer).send({'text': message['text']})
 
 @channel_session
@@ -88,7 +79,7 @@ def ws_disconnect(message):
     try:
         user_id = message.channel_session['room']
         #user = Account.objects.get(pk=user_id)
-        print('room disconnect:', user_id)
+        #print('room disconnect:', user_id)
         Group('chat-' + str(user_id), channel_layer=message.channel_layer).discard(message.reply_channel)
     except (KeyError, Account.DoesNotExist):
         pass
